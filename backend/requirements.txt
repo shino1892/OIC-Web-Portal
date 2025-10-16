@@ -1,0 +1,14 @@
+Flask==3.1.2
+Flask-SocketIO==5.5.1
+python-dotenv==1.1.1
+SQLAlchemy==2.0.44
+PyMySQL
+psycopg2-binary==2.9.11
+requests==2.32.5
+eventlet==0.40.0
+google-generativeai
+google-api-python-client
+google-auth-httplib2
+google-auth-oauthlib
+gspread
+pandas
