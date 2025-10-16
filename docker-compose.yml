@@ -30,7 +30,7 @@ services:
       MYSQL_USER: devuser
       MYSQL_PASSWORD: sanda3
     ports:
-      - "3306:3306"
+      - "65530:65530"
     volumes:
       - db_data:/var/lib/mysql
 
