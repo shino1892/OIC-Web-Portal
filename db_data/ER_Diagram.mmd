@@ -1,0 +1,117 @@
+erDiagram
+    DEPARTMENTS {
+        INT id PK
+        VARCHAR name
+    }
+
+    COURSES {
+        INT id PK
+        VARCHAR name
+        INT department_id FK
+    }
+
+    MAJORS {
+        INT id PK
+        VARCHAR name
+        INT department_id FK
+    }
+
+    CLASSES {
+        INT id PK
+        INT grade
+        INT group_num
+        INT department_id FK
+        INT course_id FK
+        INT major_id FK
+        INT teacher_id FK
+    }
+
+    USERS {
+        INT user_id PK
+        VARCHAR email
+        VARCHAR display_name
+        VARCHAR full_name
+        ENUM role
+        INT class_id FK
+        BOOLEAN is_first
+    }
+
+    SUBJECTS {
+        INT id PK
+        VARCHAR name
+    }
+
+    SUBJECT_ASSIGNMENTS {
+        INT id PK
+        INT subject_id FK
+        INT teacher_id FK
+        INT class_id FK
+    }
+
+    TIMETABLES {
+        INT id PK
+        INT class_id FK
+        DATE date
+        INT period
+        INT subject_id FK
+        INT teacher_id FK
+    }
+
+    LESSONTIME {
+        INT id PK
+        TIME start_time
+        TIME end_time
+    }
+
+    ATTENDANCE {
+        INT id PK
+        INT user_id FK
+        INT timetable_id FK
+        ENUM status
+        INT marked_by FK
+        DATETIME marked_at
+    }
+
+    FAQ {
+        INT id PK
+        VARCHAR category
+        TEXT question
+        TEXT answer
+    }
+
+    CHAT_LOGS {
+        INT id PK
+        INT user_id FK
+        TEXT message
+        TEXT response
+        DATETIME created_at
+    }
+
+    NOTIFICATIONS {
+        INT id PK
+        INT user_id FK
+        ENUM type
+        TEXT message
+        BOOLEAN is_read
+        DATETIME created_at
+    }
+
+    %% 関係定義
+    COURSES ||--o{ DEPARTMENTS : "department_id"
+    MAJORS ||--o{ DEPARTMENTS : "department_id"
+    CLASSES ||--o{ DEPARTMENTS : "department_id"
+    CLASSES ||--o{ COURSES : "course_id"
+    CLASSES ||--o{ MAJORS : "major_id"
+    CLASSES ||--o{ USERS : "teacher_id"
+    USERS ||--o{ CLASSES : "class_id"
+    SUBJECT_ASSIGNMENTS ||--o{ SUBJECTS : "subject_id"
+    SUBJECT_ASSIGNMENTS ||--o{ USERS : "teacher_id"
+    SUBJECT_ASSIGNMENTS ||--o{ CLASSES : "class_id"
+    TIMETABLES ||--o{ CLASSES : "class_id"
+    TIMETABLES ||--o{ SUBJECTS : "subject_id"
+    TIMETABLES ||--o{ USERS : "teacher_id"
+    ATTENDANCE ||--o{ USERS : "user_id"
+    ATTENDANCE ||--o{ TIMETABLES : "timetable_id"
+    ATTENDANCE ||--o{ USERS : "marked_by"
+    CHAT_LOGS ||--o{ USERS : "user_id"
+    NOTIFICATIONS ||--o{ USERS : "user_id"

@@ -1,0 +1,48 @@
+version: "3.9"
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: docker/frontend.Dockerfile
+    env_file: ./frontend/.env
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: docker/backend.Dockerfile
+    env_file: ./backend/.env
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    container_name: campus_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: sanda3
+      MYSQL_DATABASE: campus_life
+      MYSQL_USER: devuser
+      MYSQL_PASSWORD: sanda3
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  nginx:
+    image: nginx:1.25-alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/nginx:/etc/nginx/conf.d:ro
+    depends_on:
+      - frontend
+      - backend
+
+volumes:
+  db_data:
