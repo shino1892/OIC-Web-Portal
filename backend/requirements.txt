@@ -1,5 +1,7 @@
 Flask==3.1.2
 Flask-SocketIO==5.5.1
+Flask-cors
+Flask-SQLAlchemy
 python-dotenv==1.1.1
 SQLAlchemy==2.0.44
 PyMySQL
