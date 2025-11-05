@@ -1,3 +1,15 @@
+// frontend/app/page.tsx
+"use client";
+import { useEffect, useState } from "react";
+
 export default function Home() {
-  return <h1>Hello Campus Life!</h1>;
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    fetch("http://localhost:5000/api/hello")
+      .then((res) => res.json())
+      .then((data) => setMessage(data.message));
+  }, []);
+
+  return <h1>{message || "Loading..."}</h1>;
 }

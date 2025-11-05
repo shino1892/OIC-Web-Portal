@@ -9,7 +9,8 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./frontend:/usr/src
+      - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules
     depends_on:
       - backend
 
@@ -22,7 +23,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./backend:/usr/src
+      - ./backend:/usr/src/app
     depends_on:
       - db
 
