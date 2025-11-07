@@ -39,7 +39,7 @@ services:
     ports:
       - "65533:65533"
     volumes:
-      - db_data:/var/lib/mysql
+      - ./db/init:/docker-entrypoint-initdb.d
 
   nginx:
     container_name: campus_nginx

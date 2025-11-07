@@ -7,8 +7,5 @@ CREATE TABLE attendance (
     marked_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_user_id (user_id),
     INDEX idx_timetable_id (timetable_id),
-    INDEX idx_marked_by (marked_by),
-    FOREIGN KEY (user_id) REFERENCES users(user_id),
-    FOREIGN KEY (timetable_id) REFERENCES timetables(id),
-    FOREIGN KEY (marked_by) REFERENCES users(user_id)
+    INDEX idx_marked_by (marked_by)
 );

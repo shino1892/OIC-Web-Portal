@@ -13,8 +13,7 @@ CREATE TABLE chat_logs (
     user_id INT NOT NULL,
     message TEXT NOT NULL,
     response TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 -- 通知（授業変更や出席リマインド）
@@ -24,6 +23,5 @@ CREATE TABLE notifications (
     type ENUM('授業変更','出席リマインド','イベント') NOT NULL,
     message TEXT NOT NULL,
     is_read BOOLEAN DEFAULT FALSE,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );

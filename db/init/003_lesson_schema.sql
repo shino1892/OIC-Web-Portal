@@ -12,10 +12,7 @@ CREATE TABLE subject_assignments (
     class_id INT NOT NULL,
     INDEX idx_subject_id (subject_id),
     INDEX idx_teacher_id (teacher_id),
-    INDEX idx_class_id (class_id),
-    FOREIGN KEY (subject_id) REFERENCES subjects(id),
-    FOREIGN KEY (teacher_id) REFERENCES users(user_id),
-    FOREIGN KEY (class_id) REFERENCES classes(id)
+    INDEX idx_class_id (class_id)
 );
 
 -- 時間割
@@ -29,9 +26,6 @@ CREATE TABLE timetables (
     INDEX idx_class_id (class_id),
     INDEX idx_subject_id (subject_id),
     INDEX idx_teacher_id (teacher_id),
-    FOREIGN KEY (class_id) REFERENCES classes(id),
-    FOREIGN KEY (subject_id) REFERENCES subjects(id),
-    FOREIGN KEY (teacher_id) REFERENCES users(user_id),
     CHECK (period BETWEEN 1 AND 7)
 );
 
