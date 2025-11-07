@@ -1,15 +1,19 @@
 // frontend/app/page.tsx
 "use client";
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
+// import { Button } from "@/components/ui/Button";
 
 export default function Home() {
-  const [message, setMessage] = useState("");
-
-  useEffect(() => {
-    fetch("http://localhost:5000/api/hello")
-      .then((res) => res.json())
-      .then((data) => setMessage(data.message));
-  }, []);
-
-  return <h1>{message || "Loading..."}</h1>;
+  return (
+    <main>
+      <h1>Welcom to OIC!!</h1>
+      <button>時間割</button>
+      <button>出席管理</button>
+      <button>実習課題管理</button>
+      <button>イベント情報</button>
+      <button>キャリア支援</button>
+      <button>コミュニティ</button>
+      <button>AI学習支援</button>
+    </main>
+  );
 }

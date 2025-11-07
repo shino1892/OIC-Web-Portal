@@ -1,17 +1,28 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from .config import Config
 from flask_cors import CORS
-from .routes import bp
+from app.api.routes import api_bp
+from app.api.user_routes import user_bp
+from app.core.config import Config
 
-db = SQLAlchemy()
 
 def create_app():
     app = Flask(__name__)
+    
+    # 設定を読み込む
     app.config.from_object(Config)
-    CORS(app, origins=["http://localhost:3000"])
-    db.init_app(app)
 
-    app.register_blueprint(bp)
+    # --- ① CORSをグローバルで先に適用 ---
+    # 全エンドポイントでCORSを許可（特にlocalhost環境）
+    CORS(
+        app,
+        origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+        supports_credentials=True,
+        allow_headers=["Content-Type", "Authorization"],
+        methods=["GET", "POST", "OPTIONS"]
+    )
+
+    # --- ② Blueprint登録 ---
+    app.register_blueprint(api_bp, url_prefix="/api")
+    app.register_blueprint(user_bp, url_prefix="/api/users")
 
     return app
