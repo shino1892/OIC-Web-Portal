@@ -8,10 +8,8 @@ CREATE TABLE subjects (
 CREATE TABLE subject_assignments (
     id INT AUTO_INCREMENT PRIMARY KEY,
     subject_id INT NOT NULL,
-    teacher_id INT NOT NULL,
     class_id INT NOT NULL,
     INDEX idx_subject_id (subject_id),
-    INDEX idx_teacher_id (teacher_id),
     INDEX idx_class_id (class_id)
 );
 
