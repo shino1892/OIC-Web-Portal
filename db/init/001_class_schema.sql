@@ -18,6 +18,7 @@ CREATE TABLE departments (
 CREATE TABLE classes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     department_id INT NOT NULL,
+    grade INT NOT NULL,
     teacher_id INT ,
     INDEX idx_department_id (department_id),
     INDEX idx_teacher_id (teacher_id)
