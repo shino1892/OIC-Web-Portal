@@ -28,7 +28,9 @@ services:
       - db
 
   db:
-    image: mysql:8.0
+    build:
+      context: ./db
+      dockerfile: Dockerfile
     container_name: campus_db
     restart: always
     environment:
@@ -37,8 +39,9 @@ services:
       MYSQL_USER: devuser
       MYSQL_PASSWORD: sanda3
     ports:
-      - "65533:65533"
+      - "65533:3306"
     volumes:
+      - ./db/conf.d/my.cnf:/etc/mysql/conf.d/my.cnf
       - ./db/init:/docker-entrypoint-initdb.d
 
   nginx:
