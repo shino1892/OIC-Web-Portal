@@ -8,13 +8,17 @@ INSERT INTO lessontime (id, start_time, end_time) VALUES
     (7, '15:50:00', '16:40:00');
 
 INSERT INTO departments (id,name) VALUES
+    (110,"情報スペシャリスト学科"),
+    (120,"情報システム学科"),
     (149,"ネット・動画クリエイター学科"),
     (133,"デジタルビジネス学科"),
+    (280,"国際ITビジネス学科"),
     (320,"医療福祉事務学科"),
+    (341,"ホテル・ブライダル・観光学科"),
     (351,"医療情報マネジメント学科"),
     (311,"経営アシスト学科"),
-    (330,"公務員総合学科"),
-    (280,"国際ITビジネス学科");
+    (330,"公務員総合学科");
+
 
 INSERT INTO departments (id,name,course) VALUES
     (171,"ゲーム・VRクリエイター学科","ゲームクリエイターコース"),
@@ -22,24 +26,12 @@ INSERT INTO departments (id,name,course) VALUES
     (154,"CGデザイン学科","3DCGデザインコース"),
     (155,"CGデザイン学科","イラスト・デザインコース");
 
-INSERT INTO departments (id,name, major) VALUES
-    (110,"情報スペシャリスト学科","ネットワーク・セキュリティ専攻"),
-    (111,"情報スペシャリスト学科","AI・IoT専攻"),
-    (120,"情報システム学科","アプリケーション専攻"),
-    (121,"情報システム学科","クラウド・インフラ専攻"),
-    (341,"ホタル・ブライダル・観光学科","ホテル・ブライダル専攻"),
-    (342,"ホテル・ブライダル・観光学科","ホテル・観光専攻");
-
-
 INSERT INTO classes (department_id) VALUES
     (110), 
-    (111), 
     (120), 
-    (121), 
     (149), 
     (133), 
     (341), 
-    (342), 
     (320), 
     (351), 
     (311), 
@@ -52,8 +44,8 @@ INSERT INTO classes (department_id) VALUES
 
 INSERT INTO student_users (user_id,email,admission_year,full_name, class_id) VALUES
     (24110001,"24110001@oic-ok.ac.jp",2024,"三田博斗",1),
-    (24110014,"24110014@oic-ok.ac.jp",2024,"岡本詩織",2),
-    (24110030,"24110030@oic-ok.ac.jp",2024  ,"藤岡聖也",2);
+    (24110014,"24110014@oic-ok.ac.jp",2024,"岡本詩織",1),
+    (24110030,"24110030@oic-ok.ac.jp",2024  ,"藤岡聖也",1);
 
 INSERT INTO teacher_users (user_id,email,full_name) VALUES
     (24110011,"24110011@oic-ok.ac.jp","竹長祐菜"),
