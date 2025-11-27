@@ -3,16 +3,14 @@ CREATE TABLE departments (
     id INT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     course VARCHAR(100),
-    major VARCHAR(100),
     CONSTRAINT ck_id CHECK (id BETWEEN 100 AND 999),
-    CONSTRAINT ck_cours_major CHECK (
-        (course IS NULL AND major IS NULL)
-        OR
-        (course IS NULL AND major IS NOT NULL)
-        OR
-        (course IS NOT NULL AND major IS NULL)
-    )
 );
+
+CREATE TABLE major (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    department_id INT NOT NULL
+)
 
 -- クラス
 CREATE TABLE classes (

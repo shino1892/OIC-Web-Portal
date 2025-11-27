@@ -22,16 +22,31 @@ def google_login():
             "sub": idinfo["sub"]
         }
 
-        # 必要であればここでJWT発行やDB登録を行う
+        #ここからDB登録処理
+        hasUser = db_user.exists_student_user(user["sub"])
+
+        if not hasUser:
+            user_id = 0
+            admission_year = 0
+            class_id = 0
+
+            result = db_user.regist_student_user(user_id,user["email"],user["sub"],admission_year,user["name"],class_id)
+            
+            if not result:
+                return jsonify({"error": "ユーザーデータ登録処理に失敗しました。"}), 400
+
+        # ここでJWT発行を行う
         return jsonify({"user": user}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 400
     
-@user_bp.route("/get/hasUser",methods=["POST"])
+@user_bp.route("/regist/studentUser",methods=["POST"])
 def has_student_user():
     try:
-        hasUser = db_user.exists_student_user()
+        
+
+        result = db_user.regist_student_user()
         return jsonify({"hasUser": hasUser}),200
     
     except Exception as e:

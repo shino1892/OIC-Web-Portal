@@ -20,23 +20,7 @@ export default function Login() {
     const data = await res.json();
     console.log("ログイン結果:", data);
 
-    const google_sub = data.user.sub;
-
-    const userRes = await fetch("http://localhost:5000/api/users/get/hasUser", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(google_sub),
-      credentials: "include",
-    });
-
-    const userData = await userRes.json();
-    const hasUser = userData.hasUser;
-
-    if (!hasUser) {
-      router.push("/regist")
-    } else {
-      router.push("/");
-    }
+    router.push("/");
   };
 
   return (
