@@ -14,5 +14,6 @@ CREATE TABLE student_users (
 CREATE TABLE teacher_users (
     user_id INT PRIMARY KEY UNIQUE,
     email VARCHAR(255) NOT NULL UNIQUE,
+    google_sub VARCHAR(255) UNIQUE,
     full_name VARCHAR(100) NOT NULL
 )
