@@ -8,7 +8,7 @@ export default function Departments() {
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/users/get/departments", {
+        const res = await fetch("http://localhost:5000/api/users/get/db_test", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
