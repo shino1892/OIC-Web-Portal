@@ -1,3 +1,34 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* 必要なカスタムスタイル */
+
+
+body {
+  font-family: Tahoma, sans-serif;
+}
+main {
+  font-family: Tahoma, sans-serif;
+}
+
+
+.buttonUnderline::after {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  content: "";
+  background-color: #6fa24a;
+  transform: scaleX(0);
+  transform-origin: right top;
+  transition: transform 0.3s;
+}
+
+.buttonUnderline:hover::after {
+  transform: scaleX(1);
+  transform-origin: left top;
+}
+
+
