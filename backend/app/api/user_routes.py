@@ -29,9 +29,10 @@ def google_login():
         }
 
         #ここからDB登録処理
-        hasUser = db_user.exists_student_user(user["sub"])
-
-        if not hasUser:
+        hasStudentUser = db_user.exists_student_user(user["sub"])
+        hasTeacherUser = db_user.exists_teacher_user(user["email"],user["sub"])
+        
+        if not hasStudentUser:
             user_id = 0
             admission_year = 0
             class_id = 0
@@ -41,9 +42,14 @@ def google_login():
             if not result:
                 return jsonify({"error": "ユーザーデータ登録処理に失敗しました。"}), 400
 
+        if not hasTeacherUser:
+            return jsonify({"error": "存在しないユーザーです。"}), 400
+        
+        user["isTeacher"] = hasTeacherUser
+
         # JWT発行 (例: 有効期限1日)
         access_token = create_access_token(
-            data={"sub": user["sub"], "email": user["email"], "name": user["name"]},
+            data={"sub": user["sub"], "email": user["email"], "name": user["name"],"isTeacher":hasTeacherUser},
             expires_delta=datetime.timedelta(days=1)
         )
 
