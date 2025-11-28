@@ -2,12 +2,7 @@ erDiagram
     DEPARTMENTS {
         INT id PK
         VARCHAR name
-    }
-
-    COURSES {
-        INT id PK
-        VARCHAR name
-        INT department_id FK
+        VARCHAR course
     }
 
     MAJORS {
@@ -18,22 +13,28 @@ erDiagram
 
     CLASSES {
         INT id PK
-        INT grade
-        INT group_num
         INT department_id FK
-        INT course_id FK
-        INT major_id FK
+        INT grade
         INT teacher_id FK
     }
 
-    USERS {
+    STUDENT_USERS {
         INT user_id PK
         VARCHAR email
-        VARCHAR display_name
+        VARCHAR google_sub
+        INT admission_year
         VARCHAR full_name
-        ENUM role
         INT class_id FK
-        BOOLEAN is_first
+        BOOLEAN is_repeat
+        BOOLEAN is_graduation
+        BOOLEAN is_enrollment
+    }
+
+    TEACHER_USERS {
+        INT user_id PK
+        VARCHAR email
+        VARCHAR google_sub
+        VARCHAR full_name
     }
 
     SUBJECTS {
@@ -44,7 +45,6 @@ erDiagram
     SUBJECT_ASSIGNMENTS {
         INT id PK
         INT subject_id FK
-        INT teacher_id FK
         INT class_id FK
     }
 
@@ -68,7 +68,6 @@ erDiagram
         INT user_id FK
         INT timetable_id FK
         ENUM status
-        INT marked_by FK
         DATETIME marked_at
     }
 
@@ -77,6 +76,7 @@ erDiagram
         VARCHAR category
         TEXT question
         TEXT answer
+        DATETIME updated_at
     }
 
     CHAT_LOGS {
@@ -97,7 +97,26 @@ erDiagram
     }
 
     %% 関係定義
-    COURSES ||--o{ DEPARTMENTS : "department_id"
+    MAJORS }o--|| DEPARTMENTS : "department_id"
+    CLASSES }o--|| DEPARTMENTS : "department_id"
+    CLASSES }o--|| TEACHER_USERS : "teacher_id"
+    
+    STUDENT_USERS }o--|| CLASSES : "class_id"
+    
+    SUBJECT_ASSIGNMENTS }o--|| SUBJECTS : "subject_id"
+    SUBJECT_ASSIGNMENTS }o--|| CLASSES : "class_id"
+    
+    TIMETABLES }o--|| CLASSES : "class_id"
+    TIMETABLES }o--|| SUBJECTS : "subject_id"
+    TIMETABLES }o--|| TEACHER_USERS : "teacher_id"
+    
+    ATTENDANCE }o--|| STUDENT_USERS : "user_id"
+    ATTENDANCE }o--|| TIMETABLES : "timetable_id"
+    
+    CHAT_LOGS }o--|| STUDENT_USERS : "user_id"
+    
+    NOTIFICATIONS }o--|| STUDENT_USERS : "user_id"
+
     MAJORS ||--o{ DEPARTMENTS : "department_id"
     CLASSES ||--o{ DEPARTMENTS : "department_id"
     CLASSES ||--o{ COURSES : "course_id"
