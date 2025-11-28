@@ -1,7 +1,7 @@
 "use client";
 
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
   const router = useRouter();
