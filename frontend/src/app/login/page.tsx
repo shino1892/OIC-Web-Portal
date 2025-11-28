@@ -1,8 +1,10 @@
 "use client";
 
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
+import { useRouter } from "next/router";
 
 export default function Login() {
+  const router = useRouter();
   const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!;
 
   const handleSuccess = async (credentialResponse: any) => {
@@ -17,6 +19,8 @@ export default function Login() {
 
     const data = await res.json();
     console.log("ログイン結果:", data);
+
+    router.push("/");
   };
 
   return (
