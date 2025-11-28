@@ -4,6 +4,7 @@ from google.auth.transport import requests as grequests
 from flask import Blueprint, jsonify
 from app.utility.db.db_test import get_departments
 import app.utility.db.db_user as db_user
+import app.utility.db.db_class as db_class
 
 user_bp = Blueprint('user', __name__)
 
@@ -26,9 +27,9 @@ def google_login():
         hasUser = db_user.exists_student_user(user["sub"])
 
         if not hasUser:
-            user_id = 0
-            admission_year = 0
-            class_id = 0
+            user_id = user["email"][0:7]
+            admission_year = user_id[0:1]
+            class_id = db_class.get_class_data(user_id[2:4])
 
             result = db_user.regist_student_user(user_id,user["email"],user["sub"],admission_year,user["name"],class_id)
             

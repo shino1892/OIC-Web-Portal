@@ -33,5 +33,4 @@ def regist_student_user(user_id, email, google_sub, admission_year, fulll_name, 
     except:
         return False
     finally:
-        conn.close()
-        
+        conn.close()       
