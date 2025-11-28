@@ -1,16 +1,16 @@
 -- 学科
 CREATE TABLE departments (
-    department_id INT PRIMARY KEY,
+    id INT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     course VARCHAR(100),
-    CONSTRAINT ck_id CHECK (id BETWEEN 100 AND 999),
+    CONSTRAINT ck_id CHECK (id BETWEEN 100 AND 999)
 );
 
 CREATE TABLE major (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     department_id INT NOT NULL
-)
+);
 
 -- クラス
 CREATE TABLE classes (
@@ -20,4 +20,5 @@ CREATE TABLE classes (
     INDEX idx_department_id (department_id),
     INDEX idx_teacher_id (teacher_id)
 );
+
 

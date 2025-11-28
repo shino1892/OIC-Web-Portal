@@ -1,8 +1,10 @@
 from flask import Flask, request, jsonify
 from google.oauth2 import id_token
 from google.auth.transport import requests as grequests
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify,current_app
+
 from app.utility.auth.jwt import create_access_token
+from app.core.config import Config
 import datetime
 from app.utility.db.db_test import get_departments
 import app.utility.db.db_user as db_user
@@ -18,10 +20,10 @@ def google_login():
     """
     data = request.get_json()
     token = data.get("token")
-
+    GOOGLE_CLIENT_ID = Config.GOOGLE_CLIENT_ID
     try:
         # IDトークンをGoogleで検証
-        idinfo = id_token.verify_oauth2_token(token, grequests.Request())
+        idinfo = id_token.verify_oauth2_token(token, grequests.Request(),audience=GOOGLE_CLIENT_ID)
 
         user = {
             "email": idinfo["email"],
@@ -29,22 +31,24 @@ def google_login():
             "sub": idinfo["sub"]
         }
 
-        #ここからDB登録処理
-        hasStudentUser = db_user.exists_student_user(user["sub"])
-        hasTeacherUser = db_user.exists_teacher_user(user["email"],user["sub"])
-        
-        if not hasStudentUser:
-            user_id = user["email"][0:7]
-            admission_year = user_id[0:1]
-            class_id = db_class.get_class_data(user_id[2:4])
+        email = user["email"]
+        name = user["name"]
+        google_sub = user["sub"]
 
+        #ここからDB登録処理
+        hasStudentUser = db_user.exists_student_user(google_sub)
+        hasTeacherUser = db_user.exists_teacher_user(email,google_sub)
+        
+        if not hasStudentUser and not hasTeacherUser:
+            user_id = email[0:8]
+            admission_year = user_id[0:2]
+            class_id = db_class.get_class_data(user_id[2:5])
+            
             result = db_user.regist_student_user(user_id,user["email"],user["sub"],admission_year,user["name"],class_id)
             
             if not result:
+                # DB登録失敗時は400を返す
                 return jsonify({"error": "ユーザーデータ登録処理に失敗しました。"}), 400
-
-        if not hasTeacherUser:
-            return jsonify({"error": "存在しないユーザーです。"}), 400
         
         user["isTeacher"] = hasTeacherUser
 
@@ -58,6 +62,7 @@ def google_login():
         return jsonify({"user": user, "access_token": access_token}), 200
 
     except Exception as e:
+        print(f"ERROR in google_login: {e}", flush=True)
         return jsonify({"error": str(e)}), 400
     
 @user_bp.route("/get/db_test", methods=["POST"])
