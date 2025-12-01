@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from google.oauth2 import id_token
 from google.auth.transport import requests as grequests
-from flask import Blueprint, jsonify,current_app
+from flask import Blueprint, jsonify
 
 from app.utility.auth.jwt import create_access_token
 from app.core.config import Config

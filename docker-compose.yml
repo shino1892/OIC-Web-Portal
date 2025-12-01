@@ -28,6 +28,8 @@ services:
       - ./backend:/usr/src/app
     depends_on:
       - db
+    environment:
+      - FLASK_DEBUG=1
 
   db:
     build:
