@@ -10,7 +10,7 @@ export default function Login() {
   const handleSuccess = async (credentialResponse: any) => {
     const token = credentialResponse.credential;
     // Flaskにトークンを送る
-    const res = await fetch("http://localhost:5000/api/users/auth/google", {
+    const res = await fetch("/api/users/auth/google", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token }),

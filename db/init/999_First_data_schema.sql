@@ -42,11 +42,6 @@ INSERT INTO classes (department_id) VALUES
     (154), 
     (155); 
 
-INSERT INTO student_users (user_id,email,admission_year,full_name, class_id) VALUES
-    (24110001,"24110001@oic-ok.ac.jp",2024,"三田博斗",1),
-    (24110014,"24110014@oic-ok.ac.jp",2024,"岡本詩織",1),
-    (24110030,"24110030@oic-ok.ac.jp",2024  ,"藤岡聖也",1);
-
 INSERT INTO teacher_users (user_id,email,full_name) VALUES
     (24110011,"24110011@oic-ok.ac.jp","竹長祐菜"),
     (24110016,"24110016@oic-ok.ac.jp","篠原陵"),

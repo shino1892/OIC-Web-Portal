@@ -6,6 +6,8 @@ services:
       context: ./frontend
       dockerfile: docker/frontend.Dockerfile
     env_file: ./frontend/.env
+    environment:
+      - WATCHPACK_POLLING=true
     ports:
       - "3000:3000"
     volumes:
@@ -26,6 +28,8 @@ services:
       - ./backend:/usr/src/app
     depends_on:
       - db
+    environment:
+      - FLASK_DEBUG=1
 
   db:
     build:
