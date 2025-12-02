@@ -1,6 +1,7 @@
 import "./globals.css";
 import React from "react";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 export const metadata = {
   title: "OIC-student",
@@ -17,7 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* ヘッダーの高さ分下げる */}
         <div className="pt-16">{children}</div>
         {/*フッター*/}
-        <footer className="w-full text-center py-4 bg-gray-100 text-gray-600 mt-8">&copy; SANDA-FACTORY</footer>
+        <Footer />
       </body>
     </html>
   );
