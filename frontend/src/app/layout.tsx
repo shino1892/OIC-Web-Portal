@@ -1,5 +1,6 @@
 import "./globals.css";
 import React from "react";
+import Header from "../components/Header";
 
 export const metadata = {
   title: "OIC-student",
@@ -11,26 +12,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ja">
       <body className="min-h-screen">
         {/* 固定ヘッダー */}
-        <header className="fixed w-full top-0 h-16 bg-red-100 shadow-lg z-50 flex items-center justify-end px-6">
-          <img src="/OICLOG.svg" alt="OIC Logo" className="h-10 mr-auto" />
-          {/* 右側メニュー（4つ） */}
-          <nav>
-            <ul className="flex gap-6 text-2xl">
-              <li>
-                <a href="/" className="hover:text-blue-600 bg-red-300">
-                  ホーム
-                </a>
-              </li>
-              {/*<li><a href="/about" className="hover:text-blue-600">時間割</a></li>
-                <li><a href="/contact" className="hover:text-blue-600">イベント</a></li>*/}
-              <li>
-                <a href="/login" className="buttonUnderline hover:text-blue-600 bg-red-300">
-                  ログイン
-                </a>
-              </li>
-            </ul>
-          </nav>
-        </header>
+        <Header />
 
         {/* ヘッダーの高さ分下げる */}
         <div className="pt-16">{children}</div>
