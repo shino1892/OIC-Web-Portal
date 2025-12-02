@@ -44,7 +44,7 @@ def google_login():
             admission_year = user_id[0:2]
             class_id = db_class.get_class_data(user_id[2:5])
             
-            result = db_user.regist_student_user(user_id,user["email"],user["sub"],admission_year,user["name"],class_id)
+            result = db_user.regist_student_user(user_id,email,google_sub,admission_year,name,class_id)
             
             if not result:
                 # DB登録失敗時は400を返す
@@ -54,7 +54,7 @@ def google_login():
 
         # JWT発行 (例: 有効期限1日)
         access_token = create_access_token(
-            data={"sub": user["sub"], "email": user["email"], "name": user["name"],"isTeacher":hasTeacherUser},
+            data={"sub": google_sub, "email": email, "name": name,"isTeacher":hasTeacherUser},
             expires_delta=datetime.timedelta(days=1)
         )
 
