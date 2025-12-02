@@ -13,7 +13,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-screen">
         {/* 固定ヘッダー */}
         <Header />
-
+        
         {/* ヘッダーの高さ分下げる */}
         <div className="pt-16">{children}</div>
         {/*フッター*/}
