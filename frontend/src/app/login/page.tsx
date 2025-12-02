@@ -10,7 +10,7 @@ export default function Login() {
   const handleSuccess = async (credentialResponse: any) => {
     const token = credentialResponse.credential;
     // Flaskにトークンを送る
-    const res = await fetch("http://localhost:5000/api/users/auth/google", {
+    const res = await fetch("/api/users/auth/google", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ token }),
@@ -19,6 +19,12 @@ export default function Login() {
 
     const data = await res.json();
     console.log("ログイン結果:", data);
+
+    if (data.access_token) {
+      localStorage.setItem("token", data.access_token);
+      // ログイン成功時にイベントを発火してヘッダーに通知
+      window.dispatchEvent(new Event("auth-change"));
+    }
 
     router.push("/");
   };
