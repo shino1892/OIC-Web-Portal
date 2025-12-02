@@ -14,9 +14,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-screen">
         {/* 固定ヘッダー */}
         <Header />
-        
-        {/* ヘッダーの高さ分下げる */}
-        <div className="pt-16">{children}</div>
+
+        {/* ヘッダーの高さ分下げる (Top: h-16 + Bottom: h-12 = h-28) */}
+        <div className="pt-28">{children}</div>
         {/*フッター*/}
         <Footer />
       </body>
