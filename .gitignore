@@ -62,3 +62,6 @@ backend/app/utility/debug_sheet.py
 backend/app/utility/sheet_parser.py
 backend/app/utility/sync_timetable.py
 backend/app/utility/verify_sync.py
+backend/debug_timetable_check.py
+backend/debug_timetable_any.py
+backend/debug_db_check.py
