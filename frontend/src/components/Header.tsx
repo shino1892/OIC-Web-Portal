@@ -50,9 +50,19 @@ export default function Header() {
       checkLogin();
     };
 
+    // 他のタブでの変更を検知
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "token") {
+        checkLogin();
+      }
+    };
+
     window.addEventListener("auth-change", handleAuthChange);
+    window.addEventListener("storage", handleStorageChange);
+
     return () => {
       window.removeEventListener("auth-change", handleAuthChange);
+      window.removeEventListener("storage", handleStorageChange);
     };
   }, []);
 
