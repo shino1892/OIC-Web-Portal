@@ -5,7 +5,12 @@ import { useRouter } from "next/navigation";
 
 export default function Login() {
   const router = useRouter();
-  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!;
+  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+
+  if (!clientId) {
+    console.error("Google Client ID is missing");
+    return <div className="flex justify-center items-center h-screen text-red-500">Google Client ID is not configured.</div>;
+  }
 
   const handleSuccess = async (credentialResponse: any) => {
     const token = credentialResponse.credential;
@@ -30,10 +35,8 @@ export default function Login() {
   };
 
   return (
-    <GoogleOAuthProvider clientId={clientId}>
-      <div className="flex flex-col items-center justify-center h-screen">
-        <GoogleLogin onSuccess={handleSuccess} onError={() => console.log("Login Failed")} />
-      </div>
-    </GoogleOAuthProvider>
+    <div className="flex flex-col items-center justify-center h-screen">
+      <GoogleLogin onSuccess={handleSuccess} onError={() => console.log("Login Failed")} />
+    </div>
   );
 }
