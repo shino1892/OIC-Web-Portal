@@ -23,7 +23,6 @@ export default function Login() {
     });
 
     const data = await res.json();
-    console.log("ログイン結果:", data);
 
     if (data.access_token) {
       localStorage.setItem("token", data.access_token);
@@ -36,7 +35,7 @@ export default function Login() {
 
   return (
     <div className="flex flex-col items-center justify-center h-screen">
-      <GoogleLogin onSuccess={handleSuccess} onError={() => console.log("Login Failed")} />
+      <GoogleLogin onSuccess={handleSuccess} onError={() => {}} />
     </div>
   );
 }
