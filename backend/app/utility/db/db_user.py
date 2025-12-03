@@ -83,4 +83,21 @@ def regist_student_user(user_id, email, google_sub, admission_year, full_name, c
         return False
     finally:
         if conn:
-            conn.close()       
+            conn.close()
+
+def get_student_info(google_sub):
+    """
+    Google Sub IDから学生情報を取得する
+    """
+    try:
+        conn = db_connect()
+        sql = "SELECT user_id, class_id, major_id FROM student_users WHERE google_sub = %s"
+        with conn.cursor() as cursor:
+            cursor.execute(sql, (google_sub,))
+            return cursor.fetchone()
+    except Exception as e:
+        print(f"get_student_info error: {e}")
+        return None
+    finally:
+        if conn:
+            conn.close()
