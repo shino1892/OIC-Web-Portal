@@ -22,8 +22,14 @@ export default function Header() {
     if (token) {
       try {
         const decoded = jwtDecode<UserPayload>(token);
+        // console.log("Decoded token:", decoded); // Debug
+
         // 有効期限チェック (expは秒単位、Date.now()はミリ秒単位)
-        if (decoded.exp * 1000 < Date.now()) {
+        const currentTime = Date.now();
+        const expTime = decoded.exp * 1000;
+
+        if (expTime < currentTime) {
+          console.warn("Token expired:", { expTime, currentTime });
           localStorage.removeItem("token");
           setUser(null);
         } else {
