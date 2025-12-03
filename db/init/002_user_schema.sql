@@ -5,6 +5,7 @@ CREATE TABLE student_users (
     admission_year INT NOT NULL,
     full_name VARCHAR(100) NOT NULL,
     class_id INT NOT NULL,
+    major_id INT,
     is_repeat BOOLEAN NOT NULL DEFAULT FALSE,
     is_graduation BOOLEAN NOT NULL DEFAULT FALSE,
     is_enrollment BOOLEAN NOT NULL DEFAULT TRUE,

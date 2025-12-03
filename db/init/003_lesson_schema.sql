@@ -17,6 +17,7 @@ CREATE TABLE subject_assignments (
 CREATE TABLE timetables (
     id INT AUTO_INCREMENT PRIMARY KEY,
     class_id INT NOT NULL,
+    major_id INT,
     date DATE NOT NULL,
     period INT NOT NULL,
     subject_id INT NOT NULL,

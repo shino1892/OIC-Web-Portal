@@ -19,7 +19,6 @@ INSERT INTO departments (id,name) VALUES
     (311,"経営アシスト学科"),
     (330,"公務員総合学科");
 
-
 INSERT INTO departments (id,name,course) VALUES
     (171,"ゲーム・VRクリエイター学科","ゲームクリエイターコース"),
     (172,"ゲーム・VRクリエイター学科","VRクリエイターコース"),
@@ -46,3 +45,15 @@ INSERT INTO teacher_users (user_id,email,full_name) VALUES
     (24110011,"24110011@oic-ok.ac.jp","竹長祐菜"),
     (24110016,"24110016@oic-ok.ac.jp","篠原陵"),
     (24110024,"24110024@oic-ok.ac.jp","古中智規");
+
+-- 専攻データの追加
+INSERT INTO major (name, department_id) VALUES
+    ('ネットワーク・セキュリティ専攻', 110),
+    ('AI・IoT専攻', 110),
+    ("ホテル・ブライダル専攻",341),
+    ("ホテル・観光・語学専攻",341);
+
+-- 情報スペシャリスト学科の2年・3年のクラス追加
+INSERT INTO classes (department_id, grade, class_name) VALUES
+    (110, 2, '情報スペシャリスト学科2年'),
+    (110, 3, '情報スペシャリスト学科3年');
