@@ -56,3 +56,9 @@ desktop.ini
 *.log
 *.tmp
 *.swp
+backend/credentials.json
+backend/token.pickle
+backend/app/utility/debug_sheet.py
+backend/app/utility/sheet_parser.py
+backend/app/utility/sync_timetable.py
+backend/app/utility/verify_sync.py

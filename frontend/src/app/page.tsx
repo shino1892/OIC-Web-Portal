@@ -10,7 +10,6 @@ import Link from "next/link";
 export default function Home() {
   return (
     <main>
-      <h1>Welcom to OIC!!</h1>
       <nav className="flex gap-8 text-2xl h-16 shadow font-bold items-center justify-center bg-blue-300">
         <Link href="/time-table">
           <button className="hover:text-blue-600">時間割</button>
