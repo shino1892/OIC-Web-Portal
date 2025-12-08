@@ -11,12 +11,18 @@ interface TimetableEntry {
   major_id: number | null;
 }
 
+interface Major {
+  id: number;
+  name: string;
+}
+
 export default function TimeTable() {
   const router = useRouter();
   const [timetable, setTimetable] = useState<TimetableEntry[]>([]);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [loading, setLoading] = useState(true);
   const [selectedMajor, setSelectedMajor] = useState<number | null>(null);
+  const [majors, setMajors] = useState<Major[]>([]);
 
   // Helper to get Monday of the current week
   const getMonday = (d: Date) => {
@@ -41,6 +47,29 @@ export default function TimeTable() {
     const day = ("0" + d.getDate()).slice(-2);
     return `${year}-${month}-${day}`;
   };
+
+  useEffect(() => {
+    const fetchMajors = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      try {
+        const res = await fetch("/api/timetables/majors", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setMajors(data.majors);
+        }
+      } catch (error) {
+        console.error("Failed to fetch majors", error);
+      }
+    };
+
+    fetchMajors();
+  }, []);
 
   useEffect(() => {
     const fetchTimetable = async () => {
@@ -116,10 +145,16 @@ export default function TimeTable() {
         <h1 className="text-2xl font-bold text-gray-800">時間割</h1>
 
         <div className="flex items-center gap-4">
-          <select value={selectedMajor || ""} onChange={(e) => setSelectedMajor(e.target.value ? Number(e.target.value) : null)} className="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <option value="1">ネットワーク・セキュリティ専攻</option>
-            <option value="2">AI・IoT専攻</option>
-          </select>
+          {majors.length > 0 && (
+            <select value={selectedMajor || ""} onChange={(e) => setSelectedMajor(e.target.value ? Number(e.target.value) : null)} className="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="">専攻を選択 (共通)</option>
+              {majors.map((major) => (
+                <option key={major.id} value={major.id}>
+                  {major.name}
+                </option>
+              ))}
+            </select>
+          )}
 
           <div className="flex items-center gap-4 bg-white p-2 rounded-lg shadow-sm">
             <button onClick={handlePrevWeek} className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded text-gray-700 transition-colors">

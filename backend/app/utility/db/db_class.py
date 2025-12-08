@@ -24,4 +24,18 @@ def get_class_data(department_id, grade=1):
     finally:
         if conn:
             conn.close()
+
+def get_majors_by_department(department_id):
+    try:
+        conn = db_connect()
+        sql = "SELECT id, name FROM major WHERE department_id = %s"
+        with conn.cursor() as cursor:
+            cursor.execute(sql, (department_id,))
+            return cursor.fetchall()
+    except Exception as e:
+        print(f"get_majors_by_department error: {e}")
+        return []
+    finally:
+        if conn:
+            conn.close()
         
