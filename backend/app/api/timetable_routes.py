@@ -29,7 +29,7 @@ def get_majors():
     student_info = get_student_info(google_sub)
     
     if not student_info:
-        return jsonify({"error": "User not found"}), 404
+        return jsonify({"error": "User not found"}), 401
         
     department_id = student_info.get('department_id')
     if not department_id:
@@ -70,7 +70,7 @@ def get_timetables():
     # 2. Get User Info
     student_info = get_student_info(google_sub)
     if not student_info:
-        return jsonify({"error": "User not found or not a student"}), 404
+        return jsonify({"error": "User not found or not a student"}), 401
         
     class_id = student_info['class_id']
     # major_id = student_info['major_id'] # DBから取得したmajor_idはデフォルトとして使うが、クエリパラメータで上書き可能にする
