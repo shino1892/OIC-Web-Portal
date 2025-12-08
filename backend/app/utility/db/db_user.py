@@ -91,7 +91,12 @@ def get_student_info(google_sub):
     """
     try:
         conn = db_connect()
-        sql = "SELECT user_id, class_id, major_id FROM student_users WHERE google_sub = %s"
+        sql = """
+            SELECT s.user_id, s.class_id, s.major_id, c.department_id 
+            FROM student_users s
+            JOIN classes c ON s.class_id = c.id
+            WHERE s.google_sub = %s
+        """
         with conn.cursor() as cursor:
             cursor.execute(sql, (google_sub,))
             return cursor.fetchone()
