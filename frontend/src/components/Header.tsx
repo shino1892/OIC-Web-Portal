@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import MajorSelectionModal from "./MajorSelectionModal";
 
 interface UserPayload {
   sub: string;
@@ -15,6 +16,8 @@ interface UserPayload {
 
 export default function Header() {
   const [user, setUser] = useState<UserPayload | null>(null);
+  const [showMajorModal, setShowMajorModal] = useState(false);
+  const [availableMajors, setAvailableMajors] = useState<{ id: number; name: string }[]>([]);
   const router = useRouter();
 
   const checkLogin = () => {
@@ -65,6 +68,52 @@ export default function Header() {
       window.removeEventListener("storage", handleStorageChange);
     };
   }, []);
+
+  // Check for major selection need
+  useEffect(() => {
+    if (user && !user.isTeacher) {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      fetch("/api/users/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => {
+          if (res.ok) return res.json();
+          // If 404 or other error, ignore (maybe user not fully registered yet)
+          return null;
+        })
+        .then((data) => {
+          if (data && data.needs_major_selection) {
+            setAvailableMajors(data.available_majors);
+            setShowMajorModal(true);
+          }
+        })
+        .catch((err) => console.error("Error checking major:", err));
+    }
+  }, [user]);
+
+  const handleMajorSelect = async (majorId: number) => {
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch("/api/users/me/major", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ major_id: majorId }),
+      });
+      if (res.ok) {
+        setShowMajorModal(false);
+      } else {
+        alert("専攻の登録に失敗しました");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("エラーが発生しました");
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -124,6 +173,7 @@ export default function Header() {
           </Link>
         </nav>
       </div>
+      {showMajorModal && <MajorSelectionModal majors={availableMajors} onSelect={handleMajorSelect} />}
     </header>
   );
 }
