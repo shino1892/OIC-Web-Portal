@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify,Blueprint
 from google.oauth2 import id_token
 from google.auth.transport import requests as grequests
 
-from app.utility.auth.jwt import create_access_token, decode_access_token, decode_access_token
+from app.utility.auth.jwt import create_access_token, decode_access_token
 from app.core.config import Config
 import datetime
 from app.utility.db.db_test import get_departments
