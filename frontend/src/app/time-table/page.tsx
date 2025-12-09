@@ -49,26 +49,45 @@ export default function TimeTable() {
   };
 
   useEffect(() => {
-    const fetchMajors = async () => {
+    const init = async () => {
       const token = localStorage.getItem("token");
       if (!token) return;
 
       try {
-        const res = await fetch("/api/timetables/majors", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        // 1. Fetch User Info to get default major
+        let defaultMajorId: number | null = null;
+        const userRes = await fetch("/api/users/me", {
+          headers: { Authorization: `Bearer ${token}` },
         });
-        if (res.ok) {
-          const data = await res.json();
+        if (userRes.ok) {
+          const userData = await userRes.json();
+          if (userData.major_id) {
+            defaultMajorId = userData.major_id;
+          }
+        }
+
+        // 2. Fetch Majors
+        const majorsRes = await fetch("/api/timetables/majors", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (majorsRes.ok) {
+          const data = await majorsRes.json();
           setMajors(data.majors);
+
+          // Set default selection
+          if (defaultMajorId) {
+            setSelectedMajor(defaultMajorId);
+          } else if (data.majors.length > 0) {
+            // If user has no major but majors exist, select the first one
+            setSelectedMajor(data.majors[0].id);
+          }
         }
       } catch (error) {
-        console.error("Failed to fetch majors", error);
+        console.error("Failed to fetch initial data", error);
       }
     };
 
-    fetchMajors();
+    init();
   }, []);
 
   useEffect(() => {
@@ -146,8 +165,7 @@ export default function TimeTable() {
 
         <div className="flex items-center gap-4">
           {majors.length > 0 && (
-            <select value={selectedMajor || ""} onChange={(e) => setSelectedMajor(e.target.value ? Number(e.target.value) : null)} className="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option value="">専攻を選択 (共通)</option>
+            <select value={selectedMajor || ""} onChange={(e) => setSelectedMajor(Number(e.target.value))} className="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
               {majors.map((major) => (
                 <option key={major.id} value={major.id}>
                   {major.name}
