@@ -8,6 +8,7 @@ services:
     env_file: ./frontend/.env
     environment:
       - WATCHPACK_POLLING=true
+      - TZ=Asia/Tokyo
     ports:
       - "3000:3000"
     volumes:
@@ -30,6 +31,7 @@ services:
       - db
     environment:
       - FLASK_DEBUG=1
+      - TZ=Asia/Tokyo
 
   db:
     build:
@@ -42,15 +44,18 @@ services:
       MYSQL_DATABASE: campus_life
       MYSQL_USER: devuser
       MYSQL_PASSWORD: sanda3
+      TZ: Asia/Tokyo
     ports:
       - "65533:3306"
     volumes:
       - ./db/conf.d/my.cnf:/etc/mysql/conf.d/my.cnf
       - ./db/init:/docker-entrypoint-initdb.d
 
-  nginx:
     container_name: campus_nginx
     image: nginx:latest
+    environment:
+      - TZ=Asia/Tokyo
+    ports: nginx:latest
     ports:
       - "80:80"
     volumes:
