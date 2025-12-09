@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import AttendanceModal from "@/components/AttendanceModal";
 
 interface TimetableEntry {
   id: number;
@@ -23,6 +24,9 @@ export default function TimeTable() {
   const [loading, setLoading] = useState(true);
   const [selectedMajor, setSelectedMajor] = useState<number | null>(null);
   const [majors, setMajors] = useState<Major[]>([]);
+  const [userId, setUserId] = useState<number | null>(null);
+  const [selectedClass, setSelectedClass] = useState<TimetableEntry | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Helper to get Monday of the current week
   const getMonday = (d: Date) => {
@@ -49,11 +53,21 @@ export default function TimeTable() {
   };
 
   useEffect(() => {
-    const fetchMajors = async () => {
+    const fetchUserAndMajors = async () => {
       const token = localStorage.getItem("token");
       if (!token) return;
 
       try {
+        // Fetch User
+        const userRes = await fetch("/api/users/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (userRes.ok) {
+          const userData = await userRes.json();
+          setUserId(userData.user_id);
+        }
+
+        // Fetch Majors
         const res = await fetch("/api/timetables/majors", {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -64,12 +78,17 @@ export default function TimeTable() {
           setMajors(data.majors);
         }
       } catch (error) {
-        console.error("Failed to fetch majors", error);
+        console.error("Failed to fetch data", error);
       }
     };
 
-    fetchMajors();
+    fetchUserAndMajors();
   }, []);
+
+  const handleClassClick = (entry: TimetableEntry) => {
+    setSelectedClass(entry);
+    setIsModalOpen(true);
+  };
 
   useEffect(() => {
     const fetchTimetable = async () => {
@@ -210,7 +229,7 @@ export default function TimeTable() {
                     return (
                       <td key={dayOffset} className={`border-b border-r border-gray-200 p-2 h-24 align-top transition-colors hover:bg-gray-50 ${isToday ? "bg-blue-50/30" : ""}`}>
                         {entry ? (
-                          <div className="flex flex-col h-full justify-between p-1 rounded hover:bg-white hover:shadow-sm transition-all">
+                          <div onClick={() => handleClassClick(entry)} className="flex flex-col h-full justify-between p-1 rounded hover:bg-white hover:shadow-sm transition-all cursor-pointer">
                             <span className="font-bold text-sm text-gray-800 line-clamp-2">{entry.subject_name}</span>
                             <div className="mt-2 flex justify-end">
                               <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">{entry.teacher_name}</span>
@@ -229,6 +248,20 @@ export default function TimeTable() {
             </tbody>
           </table>
         </div>
+      )}
+
+      {selectedClass && userId && (
+        <AttendanceModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          timetableId={selectedClass.id}
+          userId={userId}
+          subjectName={selectedClass.subject_name}
+          onSuccess={(msg) => {
+            // Optional: Refresh data or show toast
+            console.log(msg);
+          }}
+        />
       )}
     </main>
   );

@@ -49,3 +49,33 @@ def get_timetable(class_id, major_id, start_date, end_date):
         return []
     finally:
         conn.close()
+
+def get_timetable_by_id(timetable_id):
+    """
+    指定された時間割IDの詳細（日付、開始時間など）を取得する
+    """
+    conn = db_connect()
+    if not conn:
+        return None
+
+    try:
+        with conn.cursor() as cursor:
+            sql = """
+                SELECT 
+                    t.id,
+                    t.date,
+                    l.start_time
+                FROM timetables t
+                LEFT JOIN lessontime l ON t.period = l.id
+                WHERE t.id = %s
+            """
+            cursor.execute(sql, (timetable_id,))
+            return cursor.fetchone()
+
+    except Exception as e:
+        print(f"get_timetable_by_id error: {e}")
+        return None
+    finally:
+        if conn:
+            conn.close()
+

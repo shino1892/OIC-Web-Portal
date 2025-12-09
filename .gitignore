@@ -58,3 +58,4 @@ desktop.ini
 *.swp
 
 backend/app/utility/debug/*
+出欠管理システム/*

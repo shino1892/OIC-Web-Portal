@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify,Blueprint
 from google.oauth2 import id_token
 from google.auth.transport import requests as grequests
 
-from app.utility.auth.jwt import create_access_token
+from app.utility.auth.jwt import create_access_token, decode_access_token
 from app.core.config import Config
 import datetime
 from app.utility.db.db_test import get_departments
@@ -83,3 +83,37 @@ def db_test():
     rows = get_departments()
 
     return jsonify({"departments": rows}), 200
+
+@user_bp.route("/me", methods=["GET"])
+def get_current_user():
+    auth_header = request.headers.get("Authorization")
+    if not auth_header:
+        return jsonify({"error": "Authorization header is missing"}), 401
+    
+    try:
+        token = auth_header.split(" ")[1]
+        payload = decode_access_token(token)
+        if not payload:
+            return jsonify({"error": "Invalid or expired token"}), 401
+            
+        google_sub = payload.get("sub")
+        if not google_sub:
+            return jsonify({"error": "Invalid token payload"}), 401
+            
+        # Get student info
+        student_info = db_user.get_student_info(google_sub)
+        if not student_info:
+             return jsonify({"error": "User not found"}), 404
+             
+        return jsonify({
+            "user_id": student_info["user_id"],
+            "class_id": student_info["class_id"],
+            "major_id": student_info["major_id"],
+            "department_id": student_info["department_id"],
+            "name": payload.get("name"),
+            "email": payload.get("email")
+        }), 200
+        
+    except Exception as e:
+        print(f"Error in /me: {e}")
+        return jsonify({"error": "Internal server error"}), 500
