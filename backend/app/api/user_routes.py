@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify,Blueprint
 from google.oauth2 import id_token
 from google.auth.transport import requests as grequests
 
-from app.utility.auth.jwt import create_access_token
+from app.utility.auth.jwt import create_access_token, decode_access_token
 from app.core.config import Config
 import datetime
 from app.utility.db.db_test import get_departments
@@ -83,3 +83,73 @@ def db_test():
     rows = get_departments()
 
     return jsonify({"departments": rows}), 200
+
+@user_bp.route("/me", methods=["GET"])
+def get_me():
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    token = auth_header.split(" ")[1]
+    payload = decode_access_token(token)
+    if not payload:
+        return jsonify({"error": "Invalid token"}), 401
+    
+    google_sub = payload.get("sub")
+    
+    # Get student info
+    student_info = db_user.get_student_info(google_sub)
+    if not student_info:
+        return jsonify({"user_id": None, "error": "User not found"}), 404
+        
+    # Check for major selection need
+    needs_major_selection = False
+    available_majors = []
+    
+    if student_info.get("major_id") is None:
+        majors = db_user.get_available_majors(student_info.get("department_id"))
+        if majors:
+            needs_major_selection = True
+            available_majors = majors
+            
+    response = {
+        "user_id": student_info.get("user_id"),
+        "class_id": student_info.get("class_id"),
+        "major_id": student_info.get("major_id"),
+        "department_id": student_info.get("department_id"),
+        "needs_major_selection": needs_major_selection,
+        "available_majors": available_majors
+    }
+    
+    return jsonify(response), 200
+
+@user_bp.route("/me/major", methods=["PUT"])
+def update_major():
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return jsonify({"error": "Unauthorized"}), 401
+    
+    token = auth_header.split(" ")[1]
+    payload = decode_access_token(token)
+    if not payload:
+        return jsonify({"error": "Invalid token"}), 401
+        
+    google_sub = payload.get("sub")
+    student_info = db_user.get_student_info(google_sub)
+    
+    if not student_info:
+        return jsonify({"error": "User not found"}), 404
+        
+    user_id = student_info['user_id']
+    
+    data = request.get_json()
+    major_id = data.get("major_id")
+    
+    if not major_id:
+        return jsonify({"error": "major_id is required"}), 400
+        
+    success = db_user.update_student_major(user_id, major_id)
+    if success:
+        return jsonify({"message": "Major updated successfully"}), 200
+    else:
+        return jsonify({"error": "Failed to update major"}), 500
