@@ -131,6 +131,32 @@ def get_summary():
         
     summary = db_attendance.get_attendance_summary(user_id)
     if summary is not None:
+        # Calculate Attendance Rate
+        # Rate = (Attendance Count) / (Total - Public Absent) * 100
+        # Attendance Count = Present + Late + Early = (Total - Public Absent) - Absent
+        total = summary['total']
+        absent = summary['欠席']
+        public_absent = summary['公欠']
+        
+        denom = total - public_absent
+        rate = 0
+        
+        if denom > 0:
+            rate = (denom - absent) / denom * 100
+        elif total > 0:
+            # If all classes are Public Absence, treat as 100% attendance (no unauthorized absence)
+            rate = 100.0
+            
+        summary['attendance_rate'] = round(rate, 1)
+
+        # Get Subject Summary
+        subject_summary = db_attendance.get_subject_attendance_summary(user_id)
+        summary['subject_summary'] = subject_summary
+
+        # Get Recent History
+        recent_history = db_attendance.get_recent_attendance_history(user_id)
+        summary['recent_history'] = recent_history
+
         return jsonify(summary), 200
     else:
         return jsonify({'message': 'Failed to get summary'}), 500

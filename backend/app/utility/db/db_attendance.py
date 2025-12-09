@@ -129,3 +129,77 @@ def get_attendance_summary(user_id):
         if conn:
             conn.close()
 
+def get_subject_attendance_summary(user_id):
+    """
+    科目ごとの出席状況を取得する
+    """
+    conn = None
+    try:
+        conn = db_connect()
+        if not conn:
+            return []
+            
+        sql = """
+            SELECT 
+                s.name as subject_name,
+                SUM(CASE WHEN a.status = '出席' THEN 1 ELSE 0 END) as present,
+                SUM(CASE WHEN a.status = '欠席' THEN 1 ELSE 0 END) as absent,
+                SUM(CASE WHEN a.status = '遅刻' THEN 1 ELSE 0 END) as late,
+                SUM(CASE WHEN a.status = '早退' THEN 1 ELSE 0 END) as early,
+                SUM(CASE WHEN a.status = '公欠' THEN 1 ELSE 0 END) as public_absent,
+                COUNT(*) as total
+            FROM attendance a
+            JOIN timetables t ON a.timetable_id = t.id
+            JOIN subjects s ON t.subject_id = s.id
+            WHERE a.user_id = %s
+            GROUP BY s.name
+        """
+        
+        with conn.cursor() as cursor:
+            cursor.execute(sql, (user_id,))
+            return cursor.fetchall()
+            
+    except Exception as e:
+        print(f"get_subject_attendance_summary エラー: {e}", flush=True)
+        return []
+    finally:
+        if conn:
+            conn.close()
+
+def get_recent_attendance_history(user_id, limit=5):
+    """
+    直近の活動履歴（出席以外）を取得する
+    """
+    conn = None
+    try:
+        conn = db_connect()
+        if not conn:
+            return []
+            
+        sql = """
+            SELECT 
+                t.date,
+                t.period,
+                s.name as subject_name,
+                a.status,
+                a.reason,
+                a.marked_at
+            FROM attendance a
+            JOIN timetables t ON a.timetable_id = t.id
+            JOIN subjects s ON t.subject_id = s.id
+            WHERE a.user_id = %s AND a.status != '出席'
+            ORDER BY t.date DESC, t.period DESC
+            LIMIT %s
+        """
+        
+        with conn.cursor() as cursor:
+            cursor.execute(sql, (user_id, limit))
+            return cursor.fetchall()
+            
+    except Exception as e:
+        print(f"get_recent_attendance_history エラー: {e}", flush=True)
+        return []
+    finally:
+        if conn:
+            conn.close()
+
