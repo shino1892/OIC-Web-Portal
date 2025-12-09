@@ -92,6 +92,15 @@ export default function AttendancePage() {
     initFetch();
   }, [router]);
 
+  // Sync endDate with startDate when not in Public Absence mode
+  useEffect(() => {
+    if (applicationType !== "公欠") {
+      setEndDate(startDate);
+    }
+    // Reset selected classes when application type changes
+    setSelectedClasses([]);
+  }, [applicationType, startDate]);
+
   // Fetch Timetable when date or userId changes
   useEffect(() => {
     const fetchTimetable = async () => {
@@ -108,8 +117,6 @@ export default function AttendancePage() {
           // If in "Date" mode for Public Absence, auto-select all
           if (applicationType === "公欠" && publicAbsenceMode === "date") {
             setSelectedClasses(ttData.map((t: TimetableEntry) => t.id));
-          } else {
-            setSelectedClasses([]);
           }
         }
       } catch (error) {
@@ -119,14 +126,20 @@ export default function AttendancePage() {
     fetchTimetable();
   }, [userId, startDate, endDate, applicationType, publicAbsenceMode]);
 
-  const handleCheckboxChange = (id: number) => {
-    setSelectedClasses((prev) => {
-      if (prev.includes(id)) {
-        return prev.filter((item) => item !== id);
-      } else {
-        return [...prev, id];
-      }
-    });
+  const handleClassSelection = (id: number) => {
+    if (applicationType === "早退") {
+      // Radio behavior: only one selected
+      setSelectedClasses([id]);
+    } else {
+      // Checkbox behavior: toggle
+      setSelectedClasses((prev) => {
+        if (prev.includes(id)) {
+          return prev.filter((item) => item !== id);
+        } else {
+          return [...prev, id];
+        }
+      });
+    }
   };
 
   const handleSubmitApplication = async (e: React.FormEvent) => {
@@ -252,11 +265,16 @@ export default function AttendancePage() {
               <div className="flex flex-col gap-4">
                 {/* Date Picker */}
                 <div className="flex items-center gap-2">
-                  <label className="text-sm text-gray-600">開始日:</label>
+                  <label className="text-sm text-gray-600">{applicationType === "公欠" ? "開始日:" : "日付:"}</label>
                   <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="p-2 border rounded" />
-                  <span className="text-gray-400">~</span>
-                  <label className="text-sm text-gray-600">終了日:</label>
-                  <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="p-2 border rounded" />
+
+                  {applicationType === "公欠" && (
+                    <>
+                      <span className="text-gray-400">~</span>
+                      <label className="text-sm text-gray-600">終了日:</label>
+                      <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="p-2 border rounded" />
+                    </>
+                  )}
                 </div>
 
                 {/* Public Absence Mode Selection */}
@@ -274,17 +292,19 @@ export default function AttendancePage() {
                 )}
 
                 {/* Class List */}
-                {timetable.length > 0 ? (
+                {applicationType === "公欠" && publicAbsenceMode === "date" ? (
+                  timetable.length > 0 ? (
+                    <div className="p-4 bg-blue-50 text-blue-700 rounded-md border border-blue-200">
+                      <p className="font-bold">対象期間の全ての授業（{timetable.length}コマ）が公欠として申請されます。</p>
+                    </div>
+                  ) : (
+                    <p className="text-gray-500">授業がありません</p>
+                  )
+                ) : timetable.length > 0 ? (
                   <div className="space-y-2 mt-2">
                     {timetable.map((entry) => (
                       <label key={entry.id} className={`flex items-center gap-3 p-3 border rounded hover:bg-gray-50 cursor-pointer ${selectedClasses.includes(entry.id) ? "bg-blue-50 border-blue-200" : ""}`}>
-                        <input
-                          type="checkbox"
-                          checked={selectedClasses.includes(entry.id)}
-                          onChange={() => handleCheckboxChange(entry.id)}
-                          disabled={applicationType === "公欠" && publicAbsenceMode === "date"} // Auto-selected in date mode
-                          className="w-5 h-5 text-blue-600 rounded"
-                        />
+                        <input type={applicationType === "早退" ? "radio" : "checkbox"} name={applicationType === "早退" ? "classSelection" : undefined} checked={selectedClasses.includes(entry.id)} onChange={() => handleClassSelection(entry.id)} className="w-5 h-5 text-blue-600 rounded" />
                         <div>
                           <span className="text-xs text-gray-500 block">{entry.date}</span>
                           <span className="font-bold mr-2">{entry.period}限</span>
