@@ -102,7 +102,8 @@ def get_timetables():
             return jsonify({"error": "Invalid date format. Use YYYY-MM-DD"}), 400
 
     # 4. Fetch Data
-    timetable_data = get_timetable(class_id, major_id, start_date, end_date)
+    user_id = student_info['user_id']
+    timetable_data = get_timetable(class_id, major_id, start_date, end_date, user_id)
     
     # 5. Format Response
     formatted_data = []
@@ -115,7 +116,8 @@ def get_timetables():
             "teacher_name": entry['teacher_name'],
             "major_id": entry['major_id'],
             "start_time": str(entry['start_time']) if entry['start_time'] else None,
-            "end_time": str(entry['end_time']) if entry['end_time'] else None
+            "end_time": str(entry['end_time']) if entry['end_time'] else None,
+            "attendance_status": entry.get('attendance_status')
         })
 
     return jsonify(formatted_data)

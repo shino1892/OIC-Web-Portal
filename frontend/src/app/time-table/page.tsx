@@ -10,6 +10,7 @@ interface TimetableEntry {
   subject_name: string;
   teacher_name: string;
   major_id: number | null;
+  attendance_status?: string | null;
 }
 
 interface Major {
@@ -238,9 +239,15 @@ export default function TimeTable() {
                     return (
                       <td key={dayOffset} className={`border-b border-r border-gray-200 p-2 h-24 align-top transition-colors hover:bg-gray-50 ${isToday ? "bg-blue-50/30" : ""}`}>
                         {entry ? (
-                          <div onClick={() => handleClassClick(entry)} className="flex flex-col h-full justify-between p-1 rounded hover:bg-white hover:shadow-sm transition-all cursor-pointer">
+                          <div onClick={() => handleClassClick(entry)} className="flex flex-col h-full justify-between p-1 rounded hover:bg-white hover:shadow-sm transition-all cursor-pointer relative">
                             <span className="font-bold text-sm text-gray-800 line-clamp-2">{entry.subject_name}</span>
-                            <div className="mt-2 flex justify-end">
+                            <div className="flex justify-between items-end mt-auto w-full">
+                              <span
+                                className={`text-xs font-bold px-1 rounded 
+                                ${entry.attendance_status === "出席" ? "text-blue-600 bg-blue-50" : entry.attendance_status === "欠席" ? "text-red-600 bg-red-50" : entry.attendance_status === "遅刻" ? "text-yellow-600 bg-yellow-50" : entry.attendance_status === "早退" ? "text-orange-600 bg-orange-50" : entry.attendance_status === "公欠" ? "text-green-600 bg-green-50" : ""}`}
+                              >
+                                {entry.attendance_status}
+                              </span>
                               <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">{entry.teacher_name}</span>
                             </div>
                           </div>
