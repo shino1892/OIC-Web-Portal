@@ -12,6 +12,25 @@ interface TimetableEntry {
   end_time: string;
 }
 
+interface SubjectSummary {
+  subject_name: string;
+  present: number;
+  absent: number;
+  late: number;
+  early: number;
+  public_absent: number;
+  total: number;
+}
+
+interface HistoryEntry {
+  date: string;
+  period: number;
+  subject_name: string;
+  status: string;
+  reason: string | null;
+  marked_at: string;
+}
+
 interface AttendanceSummary {
   出席: number;
   欠席: number;
@@ -19,6 +38,9 @@ interface AttendanceSummary {
   早退: number;
   公欠: number;
   total: number;
+  attendance_rate: number;
+  subject_summary: SubjectSummary[];
+  recent_history: HistoryEntry[];
 }
 
 const PUBLIC_ABSENCE_REASONS = ["入社試験", "会社訪問", "面接", "健康診断", "忌引", "その他"];
@@ -208,31 +230,103 @@ export default function AttendancePage() {
 
   return (
     <main className="min-h-screen bg-gray-50 p-4 md:p-8">
-      <div className="max-w-4xl mx-auto space-y-8">
+      <div className="max-w-6xl mx-auto space-y-8">
         {/* Summary Section */}
         <section className="bg-white p-6 rounded-lg shadow">
           <h2 className="text-xl font-bold mb-4 text-gray-800">出席状況サマリー</h2>
           {summary ? (
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
-              <div className="p-3 bg-blue-50 rounded">
-                <div className="text-sm text-gray-500">出席</div>
-                <div className="text-2xl font-bold text-blue-600">{summary.出席}</div>
+            <div className="space-y-6">
+              {/* Overall Stats */}
+              <div className="grid grid-cols-2 md:grid-cols-6 gap-4 text-center">
+                <div className="p-3 bg-blue-50 rounded">
+                  <div className="text-sm text-gray-500">出席</div>
+                  <div className="text-2xl font-bold text-blue-600">{summary.出席}</div>
+                </div>
+                <div className="p-3 bg-red-50 rounded">
+                  <div className="text-sm text-gray-500">欠席</div>
+                  <div className="text-2xl font-bold text-red-600">{summary.欠席}</div>
+                </div>
+                <div className="p-3 bg-yellow-50 rounded">
+                  <div className="text-sm text-gray-500">遅刻</div>
+                  <div className="text-2xl font-bold text-yellow-600">{summary.遅刻}</div>
+                </div>
+                <div className="p-3 bg-orange-50 rounded">
+                  <div className="text-sm text-gray-500">早退</div>
+                  <div className="text-2xl font-bold text-orange-600">{summary.早退}</div>
+                </div>
+                <div className="p-3 bg-green-50 rounded">
+                  <div className="text-sm text-gray-500">公欠</div>
+                  <div className="text-2xl font-bold text-green-600">{summary.公欠}</div>
+                </div>
+                <div className={`p-3 rounded ${summary.attendance_rate < 80 ? "bg-red-100" : "bg-gray-100"}`}>
+                  <div className="text-sm text-gray-500">出席率</div>
+                  <div className={`text-2xl font-bold ${summary.attendance_rate < 80 ? "text-red-600" : "text-gray-700"}`}>{summary.attendance_rate}%</div>
+                  {summary.attendance_rate < 80 && <div className="text-xs text-red-500 font-bold mt-1">留年注意</div>}
+                </div>
               </div>
-              <div className="p-3 bg-red-50 rounded">
-                <div className="text-sm text-gray-500">欠席</div>
-                <div className="text-2xl font-bold text-red-600">{summary.欠席}</div>
-              </div>
-              <div className="p-3 bg-yellow-50 rounded">
-                <div className="text-sm text-gray-500">遅刻</div>
-                <div className="text-2xl font-bold text-yellow-600">{summary.遅刻}</div>
-              </div>
-              <div className="p-3 bg-orange-50 rounded">
-                <div className="text-sm text-gray-500">早退</div>
-                <div className="text-2xl font-bold text-orange-600">{summary.早退}</div>
-              </div>
-              <div className="p-3 bg-green-50 rounded">
-                <div className="text-sm text-gray-500">公欠</div>
-                <div className="text-2xl font-bold text-green-600">{summary.公欠}</div>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Subject Breakdown */}
+                <div>
+                  <h3 className="font-bold text-gray-700 mb-2">科目別状況</h3>
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full text-sm text-left text-gray-500">
+                      <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                        <tr>
+                          <th className="px-3 py-2">科目名</th>
+                          <th className="px-3 py-2">欠席</th>
+                          <th className="px-3 py-2">遅刻</th>
+                          <th className="px-3 py-2">出席率</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {summary.subject_summary.map((sub, idx) => {
+                          const denom = sub.total - sub.public_absent;
+                          const rate = denom > 0 ? ((denom - sub.absent) / denom) * 100 : sub.total > 0 ? 100 : 0;
+
+                          return (
+                            <tr key={idx} className="bg-white border-b">
+                              <td className="px-3 py-2 font-medium text-gray-900">{sub.subject_name}</td>
+                              <td className={`px-3 py-2 ${sub.absent > 0 ? "text-red-600 font-bold" : ""}`}>{sub.absent}</td>
+                              <td className="px-3 py-2">{sub.late}</td>
+                              <td className={`px-3 py-2 ${rate < 80 ? "text-red-600 font-bold" : ""}`}>{rate.toFixed(1)}%</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Recent History */}
+                <div>
+                  <h3 className="font-bold text-gray-700 mb-2">直近の活動履歴 (出席以外)</h3>
+                  {summary.recent_history.length > 0 ? (
+                    <ul className="space-y-2">
+                      {summary.recent_history.map((hist, idx) => (
+                        <li key={idx} className="p-3 bg-gray-50 rounded border border-gray-200 text-sm">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <span className="font-bold text-gray-800">
+                                {hist.date} {hist.period}限
+                              </span>
+                              <span className="ml-2 text-gray-600">{hist.subject_name}</span>
+                            </div>
+                            <span
+                              className={`px-2 py-0.5 rounded text-xs font-bold 
+                              ${hist.status === "欠席" ? "bg-red-100 text-red-700" : hist.status === "遅刻" ? "bg-yellow-100 text-yellow-700" : hist.status === "早退" ? "bg-orange-100 text-orange-700" : "bg-green-100 text-green-700"}`}
+                            >
+                              {hist.status}
+                            </span>
+                          </div>
+                          {hist.reason && <div className="mt-1 text-gray-500 text-xs">理由: {hist.reason}</div>}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-sm text-gray-500">履歴はありません</p>
+                  )}
+                </div>
               </div>
             </div>
           ) : (
