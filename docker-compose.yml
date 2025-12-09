@@ -51,11 +51,11 @@ services:
       - ./db/conf.d/my.cnf:/etc/mysql/conf.d/my.cnf
       - ./db/init:/docker-entrypoint-initdb.d
 
+  nginx:
     container_name: campus_nginx
     image: nginx:latest
     environment:
       - TZ=Asia/Tokyo
-    ports: nginx:latest
     ports:
       - "80:80"
     volumes:
