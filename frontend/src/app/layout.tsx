@@ -1,6 +1,8 @@
 import "./globals.css";
 import React from "react";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
+import Providers from "../components/Providers";
 
 export const metadata = {
   title: "OIC-student",
@@ -11,13 +13,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ja">
       <body className="min-h-screen">
-        {/* 固定ヘッダー */}
-        <Header />
-        
-        {/* ヘッダーの高さ分下げる */}
-        <div className="pt-16">{children}</div>
-        {/*フッター*/}
-        <footer className="w-full text-center py-4 bg-gray-100 text-gray-600 mt-8">&copy; SANDA-FACTORY</footer>
+        <Providers>
+          {/* 固定ヘッダー */}
+          <Header />
+
+          {/* ヘッダーの高さ分下げる (h-16 + h-12 = h-28) */}
+          <div className="pt-28">{children}</div>
+          {/*フッター*/}
+          <Footer />
+        </Providers>
       </body>
     </html>
   );

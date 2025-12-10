@@ -8,7 +8,7 @@ __pycache__/
 *.sqlite3
 *.env
 venv/
-.env/
+# .env/
 instance/
 *.log
 *.pot
@@ -56,3 +56,8 @@ desktop.ini
 *.log
 *.tmp
 *.swp
+
+backend/app/utility/debug/*
+出欠管理システム/*
+
+client_secret_*.json
