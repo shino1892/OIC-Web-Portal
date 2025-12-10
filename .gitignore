@@ -59,3 +59,5 @@ desktop.ini
 
 backend/app/utility/debug/*
 出欠管理システム/*
+
+client_secret_*.json
