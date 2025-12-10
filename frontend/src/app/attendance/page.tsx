@@ -300,7 +300,7 @@ export default function AttendancePage() {
 
                 {/* Recent History */}
                 <div>
-                  <h3 className="font-bold text-gray-700 mb-2">直近の活動履歴 (出席以外)</h3>
+                  <h3 className="font-bold text-gray-700 mb-2">直近の活動履歴</h3>
                   {summary.recent_history.length > 0 ? (
                     <ul className="space-y-2">
                       {summary.recent_history.map((hist, idx) => (
