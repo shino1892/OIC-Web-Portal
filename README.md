@@ -93,8 +93,11 @@ docker compose up --build
 
 ## 🌐 アクセス方法
 
+nginxでのリバースプロキシを行なっているので必ず[http://localhost](http://localhost)からアクセスしてください、ログインが正常に行われません。
+
 - **Frontend**: [http://localhost:3000](http://localhost:3000)
 - **Backend API**: [http://localhost:5000](http://localhost:5000)
+- **Nginx**: [http://localhost](http://localhost)
 - **Database**: Host: `localhost`, Port: `65533` (User: `devuser`, Pass: `sanda3`)
 
 ## 📂 ディレクトリ構成
