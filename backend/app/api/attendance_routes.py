@@ -155,7 +155,28 @@ def get_summary():
 
         # Get Recent History
         recent_history = db_attendance.get_recent_attendance_history(user_id)
-        summary['recent_history'] = recent_history
+        
+        # Format dates for recent history
+        formatted_history = []
+        weekdays = ["月", "火", "水", "木", "金", "土", "日"]
+        for item in recent_history:
+            date_obj = item['date']
+            # Ensure date_obj is a date object (pymysql returns date object)
+            if isinstance(date_obj, str):
+                date_obj = datetime.datetime.strptime(date_obj, '%Y-%m-%d').date()
+                
+            weekday_str = weekdays[date_obj.weekday()]
+            formatted_date = date_obj.strftime('%Y年%m月%d日') + f"({weekday_str})"
+            
+            formatted_history.append({
+                "date": formatted_date,
+                "period": item['period'],
+                "subject_name": item['subject_name'],
+                "status": item['status'],
+                "reason": item['reason']
+            })
+            
+        summary['recent_history'] = formatted_history
 
         return jsonify(summary), 200
     else:
