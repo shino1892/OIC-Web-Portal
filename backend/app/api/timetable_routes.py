@@ -1,11 +1,42 @@
 from flask import Blueprint, request, jsonify
 from app.utility.db.db_timetable import get_timetable
 from app.utility.db.db_user import get_student_info
+from app.utility.db.db_class import get_majors_by_department
 from app.utility.auth.jwt import decode_access_token
 from app.core.config import Config
 import datetime
 
 timeTable_bp = Blueprint('timetable', __name__)
+
+@timeTable_bp.route("/majors", methods=["GET"])
+def get_majors():
+    """
+    ユーザーの学科に関連する専攻一覧を取得する
+    """
+    auth_header = request.headers.get('Authorization')
+    if not auth_header:
+        return jsonify({"error": "Authorization header missing"}), 401
+    
+    token = auth_header.split(" ")[1] if len(auth_header.split(" ")) > 1 else None
+    if not token:
+        return jsonify({"error": "Token missing"}), 401
+
+    payload = decode_access_token(token)
+    if not payload:
+        return jsonify({"error": "Invalid or expired token"}), 401
+        
+    google_sub = payload.get("sub")
+    student_info = get_student_info(google_sub)
+    
+    if not student_info:
+        return jsonify({"error": "User not found"}), 401
+        
+    department_id = student_info.get('department_id')
+    if not department_id:
+        return jsonify({"majors": []}), 200
+        
+    majors = get_majors_by_department(department_id)
+    return jsonify({"majors": majors}), 200
 
 @timeTable_bp.route("/", methods=["GET"])
 def get_timetables():
@@ -39,7 +70,7 @@ def get_timetables():
     # 2. Get User Info
     student_info = get_student_info(google_sub)
     if not student_info:
-        return jsonify({"error": "User not found or not a student"}), 404
+        return jsonify({"error": "User not found or not a student"}), 401
         
     class_id = student_info['class_id']
     # major_id = student_info['major_id'] # DBから取得したmajor_idはデフォルトとして使うが、クエリパラメータで上書き可能にする
@@ -71,7 +102,8 @@ def get_timetables():
             return jsonify({"error": "Invalid date format. Use YYYY-MM-DD"}), 400
 
     # 4. Fetch Data
-    timetable_data = get_timetable(class_id, major_id, start_date, end_date)
+    user_id = student_info['user_id']
+    timetable_data = get_timetable(class_id, major_id, start_date, end_date, user_id)
     
     # 5. Format Response
     formatted_data = []
@@ -84,7 +116,8 @@ def get_timetables():
             "teacher_name": entry['teacher_name'],
             "major_id": entry['major_id'],
             "start_time": str(entry['start_time']) if entry['start_time'] else None,
-            "end_time": str(entry['end_time']) if entry['end_time'] else None
+            "end_time": str(entry['end_time']) if entry['end_time'] else None,
+            "attendance_status": entry.get('attendance_status')
         })
 
     return jsonify(formatted_data)
