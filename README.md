@@ -1,4 +1,4 @@
-# Campus Life System (Sanda-Factory)
+# OIC-Web-Portal
 
 学生の学校生活をサポートするための統合管理システムです。出席管理、時間割表示、AI チャットボットによるサポート機能などを提供します。
 
@@ -53,7 +53,7 @@
 
 ```bash
 git clone <repository-url>
-cd Sanda-Factory
+cd OIC-Web-Portal
 ```
 
 ### 2. 環境変数の設定
