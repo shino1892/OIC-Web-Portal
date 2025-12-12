@@ -47,7 +47,7 @@ export default function TimeTable() {
       setLoading(true);
       const token = localStorage.getItem("token");
       if (!token) {
-        router.push("/login");
+        router.push("/");
         return;
       }
 
@@ -71,7 +71,7 @@ export default function TimeTable() {
           setTimetable(data);
         } else {
           if (res.status === 401) {
-            router.push("/login");
+            router.push("/");
           }
           console.error("Failed to fetch timetable");
         }
