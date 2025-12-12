@@ -59,7 +59,7 @@ export default function TimeTable() {
       if (!token) return;
 
       try {
-        // 1. Fetch User Info to get default major and user ID
+        // 1. Fetch User Info to get default major and userId
         let defaultMajorId: number | null = null;
         const userRes = await fetch("/api/users/me", {
           headers: { Authorization: `Bearer ${token}` },
