@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import AttendanceModal from "@/components/AttendanceModal";
 
 interface TimetableEntry {
   id: number;
@@ -9,6 +10,7 @@ interface TimetableEntry {
   subject_name: string;
   teacher_name: string;
   major_id: number | null;
+  attendance_status?: string | null;
 }
 
 interface Major {
@@ -23,6 +25,9 @@ export default function TimeTable() {
   const [loading, setLoading] = useState(true);
   const [selectedMajor, setSelectedMajor] = useState<number | null>(null);
   const [majors, setMajors] = useState<Major[]>([]);
+  const [userId, setUserId] = useState<number | null>(null);
+  const [selectedClass, setSelectedClass] = useState<TimetableEntry | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Helper to get Monday of the current week
   const getMonday = (d: Date) => {
@@ -49,34 +54,62 @@ export default function TimeTable() {
   };
 
   useEffect(() => {
-    const fetchMajors = async () => {
+    const init = async () => {
       const token = localStorage.getItem("token");
-      if (!token) return;
+      if (!token) {
+        router.push("/login");
+        return;
+      }
 
       try {
-        const res = await fetch("/api/timetables/majors", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        // 1. Fetch User Info to get default major and userId
+        let defaultMajorId: number | null = null;
+        const userRes = await fetch("/api/users/me", {
+          headers: { Authorization: `Bearer ${token}` },
         });
-        if (res.ok) {
-          const data = await res.json();
+        if (userRes.ok) {
+          const userData = await userRes.json();
+          setUserId(userData.user_id);
+          if (userData.major_id) {
+            defaultMajorId = userData.major_id;
+          }
+        }
+
+        // 2. Fetch Majors
+        const majorsRes = await fetch("/api/timetables/majors", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (majorsRes.ok) {
+          const data = await majorsRes.json();
           setMajors(data.majors);
+
+          // Set default selection
+          if (defaultMajorId) {
+            setSelectedMajor(defaultMajorId);
+          } else if (data.majors.length > 0) {
+            // If user has no major but majors exist, select the first one
+            setSelectedMajor(data.majors[0].id);
+          }
         }
       } catch (error) {
-        console.error("Failed to fetch majors", error);
+        console.error("Failed to fetch initial data", error);
       }
     };
 
-    fetchMajors();
+    init();
   }, []);
+
+  const handleClassClick = (entry: TimetableEntry) => {
+    setSelectedClass(entry);
+    setIsModalOpen(true);
+  };
 
   useEffect(() => {
     const fetchTimetable = async () => {
       setLoading(true);
       const token = localStorage.getItem("token");
       if (!token) {
-        router.push("/login");
+        router.push("/");
         return;
       }
 
@@ -100,7 +133,7 @@ export default function TimeTable() {
           setTimetable(data);
         } else {
           if (res.status === 401) {
-            router.push("/login");
+            router.push("/");
           }
           console.error("Failed to fetch timetable");
         }
@@ -146,8 +179,7 @@ export default function TimeTable() {
 
         <div className="flex items-center gap-4">
           {majors.length > 0 && (
-            <select value={selectedMajor || ""} onChange={(e) => setSelectedMajor(e.target.value ? Number(e.target.value) : null)} className="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option value="">専攻を選択 (共通)</option>
+            <select value={selectedMajor || ""} onChange={(e) => setSelectedMajor(Number(e.target.value))} className="p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
               {majors.map((major) => (
                 <option key={major.id} value={major.id}>
                   {major.name}
@@ -210,9 +242,15 @@ export default function TimeTable() {
                     return (
                       <td key={dayOffset} className={`border-b border-r border-gray-200 p-2 h-24 align-top transition-colors hover:bg-gray-50 ${isToday ? "bg-blue-50/30" : ""}`}>
                         {entry ? (
-                          <div className="flex flex-col h-full justify-between p-1 rounded hover:bg-white hover:shadow-sm transition-all">
+                          <div onClick={() => handleClassClick(entry)} className="flex flex-col h-full justify-between p-1 rounded hover:bg-white hover:shadow-sm transition-all cursor-pointer relative">
                             <span className="font-bold text-sm text-gray-800 line-clamp-2">{entry.subject_name}</span>
-                            <div className="mt-2 flex justify-end">
+                            <div className="flex justify-between items-end mt-auto w-full">
+                              <span
+                                className={`text-xs font-bold px-1 rounded 
+                                ${entry.attendance_status === "出席" ? "text-blue-600 bg-blue-50" : entry.attendance_status === "欠席" ? "text-red-600 bg-red-50" : entry.attendance_status === "遅刻" ? "text-yellow-600 bg-yellow-50" : entry.attendance_status === "早退" ? "text-orange-600 bg-orange-50" : entry.attendance_status === "公欠" ? "text-green-600 bg-green-50" : ""}`}
+                              >
+                                {entry.attendance_status}
+                              </span>
                               <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">{entry.teacher_name}</span>
                             </div>
                           </div>
@@ -229,6 +267,20 @@ export default function TimeTable() {
             </tbody>
           </table>
         </div>
+      )}
+
+      {selectedClass && userId && (
+        <AttendanceModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          timetableId={selectedClass.id}
+          userId={userId}
+          subjectName={selectedClass.subject_name}
+          onSuccess={(msg) => {
+            // Optional: Refresh data or show toast
+            console.log(msg);
+          }}
+        />
       )}
     </main>
   );

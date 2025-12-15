@@ -3,6 +3,7 @@ import React from "react";
 import App from  "../components/home";
 import ReactDOM from "react-dom/client";
 import TimeTable from "../components/Timetable";
+
 import "./globals.css";
 
 // frontend/app/page.tsx
@@ -13,6 +14,7 @@ import "./globals.css";
 export default function Page() {
   return (
     <main>
+
       <TimeTable />
     </main>
   );

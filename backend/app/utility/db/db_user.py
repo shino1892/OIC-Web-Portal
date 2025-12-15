@@ -106,3 +106,89 @@ def get_student_info(google_sub):
     finally:
         if conn:
             conn.close()
+
+def register_user_card(user_id, idm):
+    """
+    学生のFeliCaカードを登録する（複数登録可）
+    戻り値: "SUCCESS", "DUPLICATE", "DB_ERROR"
+    """
+    conn = None
+    try:
+        conn = db_connect()
+        if not conn:
+            return "DB_ERROR"
+            
+        # 重複チェック
+        check_sql = "SELECT COUNT(*) as count FROM user_cards WHERE felica_idm = %s"
+        with conn.cursor() as cursor:
+            cursor.execute(check_sql, (idm,))
+            result = cursor.fetchone()
+            if result and result['count'] > 0:
+                return "DUPLICATE"
+
+        sql = "INSERT INTO user_cards (user_id, felica_idm) VALUES (%s, %s)"
+        
+        with conn.cursor() as cursor:
+            cursor.execute(sql, (user_id, idm))
+            conn.commit()
+            return "SUCCESS"
+            
+    except Exception as e:
+        print(f"register_user_card エラー: {e}", flush=True)
+        return "DB_ERROR"
+
+    finally:
+        if conn:
+            conn.close()
+
+def get_user_cards(user_id):
+    """
+    学生の登録済みカード一覧を取得する
+    """
+    conn = None
+    try:
+        conn = db_connect()
+        if not conn:
+            return []
+            
+        sql = "SELECT felica_idm, registered_at FROM user_cards WHERE user_id = %s"
+        
+        with conn.cursor() as cursor:
+            cursor.execute(sql, (user_id,))
+            return cursor.fetchall()
+            
+    except Exception as e:
+        print(f"get_user_cards エラー: {e}", flush=True)
+        return []
+    finally:
+        if conn:
+            conn.close()
+
+def get_available_majors(department_id):
+    try:
+        conn = db_connect()
+        sql = "SELECT id, name FROM major WHERE department_id = %s"
+        with conn.cursor() as cursor:
+            cursor.execute(sql, (department_id,))
+            return cursor.fetchall()
+    except Exception as e:
+        print(f"get_available_majors error: {e}", flush=True)
+        return []
+    finally:
+        if conn:
+            conn.close()
+
+def update_student_major(user_id, major_id):
+    try:
+        conn = db_connect()
+        sql = "UPDATE student_users SET major_id = %s WHERE user_id = %s"
+        with conn.cursor() as cursor:
+            cursor.execute(sql, (major_id, user_id))
+            conn.commit()
+            return True
+    except Exception as e:
+        print(f"update_student_major error: {e}", flush=True)
+        return False
+    finally:
+        if conn:
+            conn.close()

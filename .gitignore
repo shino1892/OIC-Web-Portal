@@ -8,7 +8,7 @@ __pycache__/
 *.sqlite3
 *.env
 venv/
-.env/
+# .env/
 instance/
 *.log
 *.pot
@@ -57,12 +57,7 @@ desktop.ini
 *.tmp
 *.swp
 
-backend/app/utility/debug/credentials.json
-backend/app/utility/debug/debug_db_check.py
-backend/app/utility/debug/debug_sheet.py
-backend/app/utility/debug/debug_timetable_any.py
-backend/app/utility/debug/debug_timetable_check.py
-backend/app/utility/debug/sheet_parser.py
-backend/app/utility/debug/sync_timetable.py
-backend/app/utility/debug/token.pickle
-backend/app/utility/debug/verify_sync.py
+backend/app/utility/debug/*
+出欠管理システム/*
+
+client_secret_*.json

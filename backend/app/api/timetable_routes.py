@@ -29,7 +29,7 @@ def get_majors():
     student_info = get_student_info(google_sub)
     
     if not student_info:
-        return jsonify({"error": "User not found"}), 404
+        return jsonify({"error": "User not found"}), 401
         
     department_id = student_info.get('department_id')
     if not department_id:
@@ -70,7 +70,7 @@ def get_timetables():
     # 2. Get User Info
     student_info = get_student_info(google_sub)
     if not student_info:
-        return jsonify({"error": "User not found or not a student"}), 404
+        return jsonify({"error": "User not found or not a student"}), 401
         
     class_id = student_info['class_id']
     # major_id = student_info['major_id'] # DBから取得したmajor_idはデフォルトとして使うが、クエリパラメータで上書き可能にする
@@ -102,7 +102,8 @@ def get_timetables():
             return jsonify({"error": "Invalid date format. Use YYYY-MM-DD"}), 400
 
     # 4. Fetch Data
-    timetable_data = get_timetable(class_id, major_id, start_date, end_date)
+    user_id = student_info['user_id']
+    timetable_data = get_timetable(class_id, major_id, start_date, end_date, user_id)
     
     # 5. Format Response
     formatted_data = []
@@ -115,7 +116,8 @@ def get_timetables():
             "teacher_name": entry['teacher_name'],
             "major_id": entry['major_id'],
             "start_time": str(entry['start_time']) if entry['start_time'] else None,
-            "end_time": str(entry['end_time']) if entry['end_time'] else None
+            "end_time": str(entry['end_time']) if entry['end_time'] else None,
+            "attendance_status": entry.get('attendance_status')
         })
 
     return jsonify(formatted_data)
