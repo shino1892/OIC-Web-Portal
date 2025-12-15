@@ -160,6 +160,9 @@ def get_user_cards(user_id):
     except Exception as e:
         print(f"get_user_cards エラー: {e}", flush=True)
         return []
+    finally:
+        if conn:
+            conn.close()
 
 def get_available_majors(department_id):
     try:
