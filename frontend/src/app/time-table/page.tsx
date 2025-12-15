@@ -56,7 +56,10 @@ export default function TimeTable() {
   useEffect(() => {
     const init = async () => {
       const token = localStorage.getItem("token");
-      if (!token) return;
+      if (!token) {
+        router.push("/login");
+        return;
+      }
 
       try {
         // 1. Fetch User Info to get default major and userId
