@@ -3,6 +3,7 @@ import React from "react";
 import App from  "../components/home";
 import ReactDOM from "react-dom/client";
 import TimeTable from "../components/Timetable";
+import AttendanceSummary from "../components/Attendance";
 
 import "./globals.css";
 
@@ -13,9 +14,11 @@ import "./globals.css";
  
 export default function Page() {
   return (
-    <main>
-
-      <TimeTable />
+    <main className="mx-auto max-w-6xl px-4">
+      <div className="grid gap-6 md:grid-cols-2">
+        <TimeTable />
+        <AttendanceSummary />
+      </div>
     </main>
   );
 }

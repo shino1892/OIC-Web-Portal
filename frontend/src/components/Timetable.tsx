@@ -156,7 +156,7 @@ const weekDay = todayweekDayNames[todayDate.getDay()];
   };
 
 return (
-  <div className="mx-auto mt-6 max-w-md rounded-lg border bg-white shadow-sm">
+  <div className="rounded-lg border bg-white shadow-sm">
     {/* タイトル & 日付 */}
     <div className="border-b p-4">
       <h2 className="text-lg font-semibold">今日の時間割</h2>
