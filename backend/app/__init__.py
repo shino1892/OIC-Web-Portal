@@ -27,4 +27,11 @@ def create_app():
     app.register_blueprint(user_bp, url_prefix="/api/users")
     app.register_blueprint(timeTable_bp, url_prefix="/api/timetables")
 
+    # AIエンドポイント（フロントからは http://localhost:5000/generate を使う想定）
+    from app.api.ai_routes import ai_bp
+    app.register_blueprint(ai_bp)  # ルートは /generate    
+
     return app
+
+
+
