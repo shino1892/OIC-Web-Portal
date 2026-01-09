@@ -1,0 +1,4 @@
+-- NOTE:
+-- departments/major の初期データは 999_First_data_schema.sql で投入されるため、
+-- ここでFKを追加すると順序依存で失敗する可能性があります。
+-- FK追加は 9999_sync_config_fk.sql で行います。

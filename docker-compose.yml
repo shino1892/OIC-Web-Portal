@@ -1,4 +1,4 @@
-version: "3.9"
+# version: "3.9"
 services:
   frontend:
     container_name: frontend
@@ -32,6 +32,22 @@ services:
     environment:
       - FLASK_DEBUG=1
       - TZ=Asia/Tokyo
+
+  scheduler:
+    container_name: timetable_scheduler
+    build:
+      context: ./backend
+      dockerfile: docker/backend.Dockerfile
+    env_file: ./backend/.env
+    command: ["python", "-m", "app.scheduler.run_scheduler"]
+    volumes:
+      - ./backend:/usr/src/app
+    depends_on:
+      - db
+    environment:
+      - TZ=Asia/Tokyo
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
 
   db:
     build:
