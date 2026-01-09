@@ -33,5 +33,14 @@ ALTER TABLE attendance
 ALTER TABLE chat_logs
     ADD CONSTRAINT fk_chat_logs_user FOREIGN KEY (user_id) REFERENCES student_users(user_id);
 
+-- notifications（配信対象）
 ALTER TABLE notifications
-    ADD CONSTRAINT fk_notifications_user FOREIGN KEY (user_id) REFERENCES student_users(user_id);
+    ADD CONSTRAINT fk_notifications_target_user FOREIGN KEY (target_user_id) REFERENCES student_users(user_id),
+    ADD CONSTRAINT fk_notifications_department FOREIGN KEY (department_id) REFERENCES departments(id),
+    ADD CONSTRAINT fk_notifications_class FOREIGN KEY (class_id) REFERENCES classes(id),
+    ADD CONSTRAINT fk_notifications_major FOREIGN KEY (major_id) REFERENCES major(id);
+
+-- notification_reads（既読）
+ALTER TABLE notification_reads
+    ADD CONSTRAINT fk_notification_reads_notification FOREIGN KEY (notification_id) REFERENCES notifications(id),
+    ADD CONSTRAINT fk_notification_reads_user FOREIGN KEY (user_id) REFERENCES student_users(user_id);

@@ -3,6 +3,7 @@ from flask_cors import CORS
 from app.api.user_routes import user_bp
 from app.api.timetable_routes import timeTable_bp
 from app.api.attendance_routes import attendance_bp
+from app.api.notifications_routes import notifications_bp
 from app.core.config import Config
 
 
@@ -28,5 +29,6 @@ def create_app():
     app.register_blueprint(user_bp, url_prefix="/api/users")
     app.register_blueprint(timeTable_bp, url_prefix="/api/timetables")
     app.register_blueprint(attendance_bp, url_prefix="/api/attendance")
+    app.register_blueprint(notifications_bp, url_prefix="/api/notifications")
 
     return app
